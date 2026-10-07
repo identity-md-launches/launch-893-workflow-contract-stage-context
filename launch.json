@@ -1,0 +1,33 @@
+{
+  "kind": "evm_project",
+  "token": {
+    "contract": "LaunchToken",
+    "name": "Gold",
+    "symbol": "Gold",
+    "decimals": 18
+  },
+  "contracts": [
+    {
+      "contract": "GridMining",
+      "constructorArgs": [
+        "$token",
+        "0xd7f86b4b8cae7d942340ff628f82735b7a20893a",
+        "0x8077df514608a09f83e4e8d300645594e5d7234665448ba83f51a50f842bd3d9",
+        "1",
+        "3",
+        "150000",
+        "90",
+        "86400",
+        "1000000000000000",
+        "100000000000000000000"
+      ]
+    }
+  ],
+  "pool": {
+    "pairedCurrency": "0x0000000000000000000000000000000000000000",
+    "fee": 3000,
+    "tickSpacing": 60,
+    "initialPrice": "79228162514264337593543950336"
+  },
+  "notes": "Review candidate for the accepted src/LaunchToken.sol and src/GridMining.sol. LaunchToken has no constructor arguments; GridMining follows it and receives $token. GridMining's ordered arguments are gold, coordinator, keyHash, subscriptionId, requestConfirmations, callbackGasLimit, roundDuration, oracleTimeout, entryPrice and rewardPerRound. The proposed game settings are 3 confirmations, 150000 callback gas, a 90-second entry window, an 86400-second oracle timeout, 0.001 ETH per tile and 100 Gold per round. These are constructor-compatible assumptions, not approved launch economics. BLOCKING REVIEW FINDING: the approved inputs do not specify a target chain, coordinator, gas lane or controlled VRF subscription. The coordinator and key hash here are an Ethereum mainnet candidate from Chainlink's VRF v2.5 subscription table (200 gwei lane): https://docs.chain.link/vrf/v2-5/supported-networks#ethereum-mainnet. This does not select or authorize the launch chain. Subscription ID 1 is an explicit unresolved placeholder, not evidence of an existing, controlled, funded or authorized subscription. Before admission, replace it with the intended subscription ID, confirm the service-selected chain, verify the coordinator and gas lane on that chain, and independently review the revised manifest and all immutable constructor inputs. These values cannot be repaired after deployment. GridMining has no owner or initializer; the coordinator alone authenticates randomness callbacks. Subscription funding and consumer registration are external operating requirements. Gold rewards require voluntary post-deployment funding before a round can open. Review the documented timeout/censorship fairness tradeoff and uncapped oracle spending and value at risk. The factory supplies the LP, MerkleDistributor and initialization-only PoolInitializationGuard. Pool values follow the supplied native-ETH manifest defaults; the manifest fee is not a claim about the effective trading fee. Policy, allocations, artifact linkage and authorization belong to services. Source publication, attestation, admission, deployment and frontend publication remain later service stages; this manifest does not claim they have occurred."
+}
